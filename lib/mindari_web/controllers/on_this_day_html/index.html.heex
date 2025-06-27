@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-gray-900 text-gray-100">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Navigation -->
+    <nav class="flex justify-between items-center mb-6">
+      <.link href={previous_day_path(@month, @day)} 
+             class="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
+        ← <%= previous_day_label(@month, @day) %>
+      </.link>
+      
+      <.link href={next_day_path(@month, @day)} 
+             class="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
+        <%= next_day_label(@month, @day) %> →
+      </.link>
+    </nav>
+
+    <header class="text-gray-100 mb-8">
+      <h1 class="text-3xl font-bold text-gray-100">
+        On This Day - <%= Calendar.strftime(Date.new!(Date.utc_today().year, @month, @day), "%A, %B %d") %>
+      </h1>
+    </header>
+
+    <div class="space-y-6">
+      <%= if Enum.empty?(@notes) do %>
+        <div class="text-center py-12">
+          <p class="text-gray-400">No notes found for this date.</p>
+        </div>
+      <% else %>
+        <%= for note <- @notes do %>
+          <div class="bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-700 max-w-4xl">
+            <h3 class="text-xl font-semibold mb-2">
+              <a href={obsidian_uri(note.file_path)} 
+                 class="text-blue-400 hover:text-blue-300 transition-colors hover:underline">
+                <%= note.title %>
+              </a>
+            </h3>
+            <p class="text-sm text-gray-400 mb-4">Date: <%= note.date %></p>
+            <div class="prose prose-invert max-w-3xl text-gray-300 leading-relaxed">
+              <%= raw(note.content_html) %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="mt-8">
+      <.link href={~p"/"} class="text-blue-400 hover:text-blue-300 transition-colors">
+        ← Back to Home
+      </.link>
+    </div>
+  </div>
+</div>
