@@ -100,7 +100,7 @@ defmodule Mindari.Obsidian do
     end
   end
 
-  defp markdown_to_html(markdown) do
+  def markdown_to_html(markdown) do
     # Simple markdown to HTML conversion with dark theme styling
     markdown
     |> String.replace(~r/^#\s+(.+)$/m, "<h1 class=\"text-2xl font-bold text-gray-100 mb-4\">\\1</h1>")
@@ -108,6 +108,8 @@ defmodule Mindari.Obsidian do
     |> String.replace(~r/^###\s+(.+)$/m, "<h3 class=\"text-lg font-medium text-gray-300 mb-2\">\\1</h3>")
     |> String.replace(~r/\*\*(.+?)\*\*/m, "<strong class=\"font-semibold text-gray-100\">\\1</strong>")
     |> String.replace(~r/\*(.+?)\*/m, "<em class=\"italic text-gray-300\">\\1</em>")
+    |> String.replace(~r/\[([^\]]+)\]\(([^)]+)\)/m, "<a href=\"\\2\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-400 hover:text-blue-300 underline\">\\1 <span class=\"text-xs\">↗</span></a>")
+    |> String.replace(~r/\[\[([^\]]+)\]\]/m, "<a href=\"obsidian://open?vault=Vault&file=\\1\" class=\"text-purple-400 hover:text-purple-300 underline decoration-purple-400/50\" style=\"color: #a855f7; text-decoration: underline;\" data-obsidian-link=\"\\1\">\\1</a>")
     |> String.replace(~r/^- (.+)$/m, "<li class=\"text-gray-300 mb-1 ml-4\">\\1</li>")
     |> String.replace(~r/\[x\]/m, "<span class=\"text-green-400\">✓</span>")
     |> String.replace(~r/\[ \]/m, "<span class=\"text-gray-500\">☐</span>")
