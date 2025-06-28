@@ -15,8 +15,8 @@ defmodule Mindari.Obsidian do
   def get_notes_for_date(month, day) do
     notes = @vault_path
     |> get_all_markdown_files()
-    |> Enum.map(&parse_note/1)
-    |> Enum.filter(&note_matches_date?(&1, month, day))
+    |> Enum.filter(fn file_path -> file_matches_date?(file_path, month, day) end)
+    |> Enum.map(fn file_path -> parse_note_full(file_path) end)
     
     # Sort by the full date (year-month-day) in descending order
     Enum.sort(notes, fn note1, note2 ->
@@ -37,7 +37,29 @@ defmodule Mindari.Obsidian do
     end
   end
 
-  defp parse_note(file_path) do
+  defp file_matches_date?(file_path, month, day) do
+    case File.read(file_path) do
+      {:ok, content} ->
+        {frontmatter, _markdown_content} = parse_frontmatter(content)
+        case Map.get(frontmatter, "date") do
+          nil -> false
+          date_str -> date_matches?(date_str, month, day)
+        end
+      {:error, _} ->
+        false
+    end
+  end
+
+  defp date_matches?(date_str, month, day) do
+    case parse_date_string(date_str) do
+      {:ok, parsed_date} ->
+        parsed_date.month == month && parsed_date.day == day
+      :error ->
+        false
+    end
+  end
+
+  defp parse_note_full(file_path) do
     case File.read(file_path) do
       {:ok, content} ->
         {frontmatter, markdown_content} = parse_frontmatter(content)
@@ -119,17 +141,6 @@ defmodule Mindari.Obsidian do
     |> String.replace(~r/<li class="text-gray-300 mb-1 ml-4">(.+?)<\/li>/m, "<ul class=\"list-disc list-inside mb-4 space-y-1\"><li class=\"text-gray-300 mb-1 ml-4\">\\1</li></ul>")
   end
 
-  defp note_matches_date?(%Note{date: nil}, _month, _day), do: false
-
-  defp note_matches_date?(%Note{date: date_str}, month, day) do
-    case parse_date_string(date_str) do
-      {:ok, parsed_date} ->
-        parsed_date.month == month && parsed_date.day == day
-
-      :error ->
-        false
-    end
-  end
 
   defp parse_date_string(date_str) when is_binary(date_str) do
     date_str = String.trim(date_str)
