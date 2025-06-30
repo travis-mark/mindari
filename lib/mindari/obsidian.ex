@@ -15,8 +15,31 @@ defmodule Mindari.Obsidian do
   def get_notes_for_date(month, day) do
     notes = @vault_path
     |> get_all_markdown_files()
-    |> Enum.filter(fn file_path -> file_matches_date?(file_path, month, day) end)
-    |> Enum.map(fn file_path -> parse_note_full(file_path) end)
+    |> Enum.flat_map(fn file_path ->
+      case File.read(file_path) do
+        {:ok, content} ->
+          {frontmatter, markdown_content} = parse_frontmatter(content)
+          case Map.get(frontmatter, "date") do
+            nil -> 
+              []
+            date_str -> 
+              if date_matches?(date_str, month, day) do
+                title = extract_title(file_path, markdown_content)
+                [%Note{
+                  title: title,
+                  date: date_str,
+                  content: markdown_content,
+                  content_html: markdown_to_html(markdown_content),
+                  file_path: file_path
+                }]
+              else
+                []
+              end
+          end
+        {:error, _} ->
+          []
+      end
+    end)
     
     # Sort by the full date (year-month-day) in descending order
     Enum.sort(notes, fn note1, note2 ->
@@ -30,25 +53,12 @@ defmodule Mindari.Obsidian do
     case File.exists?(vault_path) do
       true ->
         Path.wildcard("#{vault_path}/**/*.md")
-        |> Enum.filter(&File.regular?/1)
 
       false ->
         []
     end
   end
 
-  defp file_matches_date?(file_path, month, day) do
-    case File.read(file_path) do
-      {:ok, content} ->
-        {frontmatter, _markdown_content} = parse_frontmatter(content)
-        case Map.get(frontmatter, "date") do
-          nil -> false
-          date_str -> date_matches?(date_str, month, day)
-        end
-      {:error, _} ->
-        false
-    end
-  end
 
   defp date_matches?(date_str, month, day) do
     case parse_date_string(date_str) do
@@ -59,30 +69,6 @@ defmodule Mindari.Obsidian do
     end
   end
 
-  defp parse_note_full(file_path) do
-    case File.read(file_path) do
-      {:ok, content} ->
-        {frontmatter, markdown_content} = parse_frontmatter(content)
-        title = extract_title(file_path, markdown_content)
-        
-        %Note{
-          title: title,
-          date: Map.get(frontmatter, "date"),
-          content: markdown_content,
-          content_html: markdown_to_html(markdown_content),
-          file_path: file_path
-        }
-
-      {:error, _} ->
-        %Note{
-          title: Path.basename(file_path, ".md"),
-          date: nil,
-          content: "",
-          content_html: "",
-          file_path: file_path
-        }
-    end
-  end
 
   defp parse_frontmatter(content) do
     case String.split(content, ~r/^---\s*$/m, parts: 3) do
