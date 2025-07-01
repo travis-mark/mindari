@@ -63,6 +63,16 @@ defmodule MindariWeb.OnThisDayHTML do
   end
 
   @doc """
+  Removes H1 tags from content that duplicate the note title.
+  """
+  def clean_content_html(content_html, note_title) do
+    # Remove H1 tags that contain the same text as the note title
+    content_html
+    |> String.replace(~r/<h1[^>]*>#{Regex.escape(note_title)}<\/h1>/i, "")
+    |> String.replace(~r/<h1[^>]*>#\s*#{Regex.escape(note_title)}<\/h1>/i, "")
+  end
+
+  @doc """
   Generates an Obsidian URI to open a note file in the Obsidian app.
   """
   def obsidian_uri(file_path) do

@@ -35,7 +35,7 @@
             </h3>
             <p class="text-sm text-gray-400 mb-4">Date: <%= note.date %></p>
             <div class="prose prose-invert max-w-3xl text-gray-300 leading-relaxed">
-              <%= raw(note.content_html) %>
+              <%= raw(clean_content_html(note.content_html, note.title)) %>
             </div>
           </div>
         <% end %>
