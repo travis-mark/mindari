@@ -3,7 +3,10 @@ defmodule Mindari.Obsidian do
   Module for reading and parsing Obsidian vault markdown files.
   """
 
+  require Logger
+
   @vault_path "/Users/travis/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault"
+  @cache_table :obsidian_files_cache
 
   defmodule Note do
     @moduledoc """
@@ -13,34 +16,27 @@ defmodule Mindari.Obsidian do
   end
 
   def get_notes_for_date(month, day) do
-    notes = @vault_path
-    |> get_all_markdown_files()
+    matching_files = get_matching_files_for_date(@vault_path, month, day)
+
+    notes = matching_files
     |> Enum.flat_map(fn file_path ->
       case File.read(file_path) do
         {:ok, content} ->
           {frontmatter, markdown_content} = parse_frontmatter(content)
-          case Map.get(frontmatter, "date") do
-            nil -> 
-              []
-            date_str -> 
-              if date_matches?(date_str, month, day) do
-                title = extract_title(file_path, markdown_content)
-                [%Note{
-                  title: title,
-                  date: date_str,
-                  content: markdown_content,
-                  content_html: markdown_to_html(markdown_content),
-                  file_path: file_path
-                }]
-              else
-                []
-              end
-          end
+          date_str = Map.get(frontmatter, "date")
+          title = extract_title(file_path, markdown_content)
+          [%Note{
+            title: title,
+            date: date_str,
+            content: markdown_content,
+            content_html: markdown_to_html(markdown_content),
+            file_path: file_path
+          }]
         {:error, _} ->
           []
       end
     end)
-    
+
     # Sort by the full date (year-month-day) in descending order
     Enum.sort(notes, fn note1, note2 ->
       date1 = parse_date_for_sorting(note1.date)
@@ -49,24 +45,79 @@ defmodule Mindari.Obsidian do
     end)
   end
 
-  defp get_all_markdown_files(vault_path) do
+  defp get_matching_files_for_date(vault_path, month, day) do
     case File.exists?(vault_path) do
       true ->
-        Path.wildcard("#{vault_path}/**/*.md")
+        case read_ets_cache() do
+          {:ok, file_metadata} ->
+            # Filter by date and convert to full paths
+            matching_files = file_metadata
+            |> Enum.filter(fn {_path, m, d, _date_str} -> m == month && d == day end)
+            |> Enum.map(fn {relative_path, _, _, _} -> Path.join(vault_path, relative_path) end)
+            matching_files
+
+          :cache_miss ->
+            start_time = System.monotonic_time(:millisecond)
+            files = Path.wildcard("#{vault_path}/**/*.md")
+            scan_time = System.monotonic_time(:millisecond) - start_time
+
+            # Build metadata cache with date info
+            metadata_start = System.monotonic_time(:millisecond)
+            file_metadata = files
+            |> Enum.flat_map(fn file_path ->
+              relative_path = String.replace_prefix(file_path, vault_path <> "/", "")
+              case File.read(file_path) do
+                {:ok, content} ->
+                  {frontmatter, _} = parse_frontmatter(content)
+                  case Map.get(frontmatter, "date") do
+                    nil -> []
+                    date_str ->
+                      case parse_date_string(date_str) do
+                        {:ok, date} ->
+                          [{relative_path, date.month, date.day, date_str}]
+                        :error ->
+                          []
+                      end
+                  end
+                {:error, _} -> []
+              end
+            end)
+            metadata_time = System.monotonic_time(:millisecond) - metadata_start
+            total_time = scan_time + metadata_time
+
+            write_ets_cache(file_metadata)
+            Logger.debug("Rebuilt Obsidian cache: #{length(files)} files scanned, #{length(file_metadata)} with dates (#{total_time}ms)")
+
+            # Filter and return full paths for current request
+            file_metadata
+            |> Enum.filter(fn {_path, m, d, _date_str} -> m == month && d == day end)
+            |> Enum.map(fn {relative_path, _, _, _} -> Path.join(vault_path, relative_path) end)
+        end
 
       false ->
         []
     end
   end
 
-
-  defp date_matches?(date_str, month, day) do
-    case parse_date_string(date_str) do
-      {:ok, parsed_date} ->
-        parsed_date.month == month && parsed_date.day == day
-      :error ->
-        false
+  defp read_ets_cache() do
+    case :ets.lookup(@cache_table, :file_list) do
+      [{:file_list, files, timestamp}] ->
+        # Check if cache is stale (older than 1 hour)
+        current_time = System.system_time(:second)
+        age = current_time - timestamp
+        if age < 3600 do
+          {:ok, files}
+        else
+          :cache_miss
+        end
+      [] ->
+        :cache_miss
     end
+  end
+
+  defp write_ets_cache(files) do
+    timestamp = System.system_time(:second)
+    :ets.insert(@cache_table, {:file_list, files, timestamp})
   end
 
 
@@ -139,7 +190,7 @@ defmodule Mindari.Obsidian do
       ~r/^(\d{4})-(\d{1,2})-(\d{1,2})$/,
       # US format: 12/25/2023
       ~r/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
-      # EU format: 25/12/2023  
+      # EU format: 25/12/2023
       ~r/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
       # Date with month name: December 25, 2023
       ~r/^(\w+)\s+(\d{1,2}),?\s+(\d{4})$/,
@@ -169,7 +220,7 @@ defmodule Mindari.Obsidian do
   defp parse_date_parts(_format, part1, part2, part3, date_str, rest) do
     iso_format = ~r/^(\d{4})-(\d{1,2})-(\d{1,2})/
     us_format = ~r/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
-    
+
     cond do
       Regex.match?(iso_format, date_str) ->
         create_date(String.to_integer(part1), String.to_integer(part2), String.to_integer(part3))
