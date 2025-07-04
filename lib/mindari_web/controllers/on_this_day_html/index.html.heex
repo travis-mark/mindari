@@ -1,51 +1,155 @@
 <div class="min-h-screen bg-gray-900 text-gray-100">
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Navigation -->
-    <nav class="flex justify-between items-center mb-6">
-      <.link href={previous_day_path(@month, @day)} 
-             class="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
-        ← <%= previous_day_label(@month, @day) %>
-      </.link>
+  <div class="flex max-w-7xl mx-auto px-4 py-8">
+    <!-- Sidebar - Desktop only -->
+    <div class="hidden lg:block w-64 mr-4 flex-shrink-0">
+      <!-- Home link -->
+      <div class="mb-4">
+        <.link
+          href={~p"/"}
+          class="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            >
+            </path>
+          </svg>
+          Home
+        </.link>
+      </div>
       
-      <.link href={next_day_path(@month, @day)} 
-             class="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
-        <%= next_day_label(@month, @day) %> →
-      </.link>
-    </nav>
-
-    <header class="text-gray-100 mb-8">
-      <h1 class="text-3xl font-bold text-gray-100">
-        On This Day - <%= Calendar.strftime(Date.new!(Date.utc_today().year, @month, @day), "%A, %B %d") %>
-      </h1>
-    </header>
-
-    <div class="space-y-6">
-      <%= if Enum.empty?(@notes) do %>
-        <div class="text-center py-12">
-          <p class="text-gray-400">No notes found for this date.</p>
-        </div>
-      <% else %>
-        <%= for note <- @notes do %>
-          <div class="bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-700 max-w-4xl">
-            <h3 class="text-xl font-semibold mb-2">
-              <a href={obsidian_uri(note.file_path)} 
-                 class="text-blue-400 hover:text-blue-300 transition-colors hover:underline">
-                <%= note.title %>
-              </a>
-            </h3>
-            <p class="text-sm text-gray-400 mb-4">Date: <%= note.date %></p>
-            <div class="prose prose-invert max-w-3xl text-gray-300 leading-relaxed">
-              <%= raw(clean_content_html(note.content_html, note.title)) %>
-            </div>
+      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 sticky top-8">
+        <% calendar = calendar_data(@month, @day) %>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <.link
+              href={previous_month_path(@month, @day)}
+              class="text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                >
+                </path>
+              </svg>
+            </.link>
+            <h2 class="text-lg font-semibold text-gray-100 text-center">
+              {calendar.month_name} {calendar.year}
+            </h2>
+            <.link
+              href={next_month_path(@month, @day)}
+              class="text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                >
+                </path>
+              </svg>
+            </.link>
           </div>
-        <% end %>
-      <% end %>
+          
+<!-- Calendar Grid -->
+          <div class="grid grid-cols-7 gap-1 text-xs">
+            <!-- Day headers -->
+            <%= for day_name <- ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] do %>
+              <div class="text-center font-medium text-gray-400 py-2">
+                {day_name}
+              </div>
+            <% end %>
+            
+<!-- Calendar days -->
+            <%= for day_data <- calendar_days(calendar) do %>
+              <%= if day_data == nil do %>
+                <div class="aspect-square"></div>
+              <% else %>
+                <.link
+                  href={day_data.path}
+                  class={[
+                    "aspect-square flex items-center justify-center rounded text-center transition-colors text-sm",
+                    cond do
+                      day_data.is_current -> "bg-blue-600 text-white font-bold"
+                      day_data.is_today -> "bg-gray-700 text-gray-200 ring-1 ring-gray-600"
+                      true -> "text-gray-300 hover:bg-gray-700 hover:text-white"
+                    end
+                  ]}
+                >
+                  {day_data.day}
+                </.link>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
+    
+<!-- Main content -->
+    <div class="flex-1 min-w-0">
+      <!-- Navigation - Mobile only -->
+      <nav class="lg:hidden flex justify-between items-center mb-6">
+        <.link
+          href={previous_day_path(@month, @day)}
+          class="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
+        >
+          ← {previous_day_label(@month, @day)}
+        </.link>
 
-    <div class="mt-8">
-      <.link href={~p"/"} class="text-blue-400 hover:text-blue-300 transition-colors">
-        ← Back to Home
-      </.link>
+        <.link
+          href={next_day_path(@month, @day)}
+          class="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
+        >
+          {next_day_label(@month, @day)} →
+        </.link>
+      </nav>
+
+      <header class="text-gray-100 mb-8">
+        <h1 class="text-3xl font-bold text-gray-100">
+          <% {{current_year, _, _}, _} = :calendar.local_time() %> On This Day - {Calendar.strftime(
+            Date.new!(current_year, @month, @day),
+            "%A, %B %d"
+          )}
+        </h1>
+      </header>
+
+      <div class="space-y-6">
+        <%= if Enum.empty?(@notes) do %>
+          <div class="text-center py-12">
+            <p class="text-gray-400">No notes found for this date.</p>
+          </div>
+        <% else %>
+          <%= for note <- @notes do %>
+            <div class="bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-700 max-w-4xl">
+              <h3 class="text-xl font-semibold mb-2">
+                <a
+                  href={obsidian_uri(note.file_path)}
+                  class="text-blue-400 hover:text-blue-300 transition-colors hover:underline"
+                >
+                  {note.title}
+                </a>
+              </h3>
+              <p class="text-sm text-gray-400 mb-4">Date: {note.date}</p>
+              <div class="prose prose-invert max-w-3xl text-gray-300 leading-relaxed">
+                {raw(clean_content_html(note.content_html, note.title))}
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="mt-8">
+        <.link href={~p"/"} class="text-blue-400 hover:text-blue-300 transition-colors">
+          ← Back to Home
+        </.link>
+      </div>
     </div>
   </div>
 </div>

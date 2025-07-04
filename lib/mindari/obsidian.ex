@@ -18,24 +18,29 @@ defmodule Mindari.Obsidian do
   def get_notes_for_date(month, day) do
     matching_files = get_matching_files_for_date(@vault_path, month, day)
 
-    notes = matching_files
-    |> Enum.flat_map(fn file_path ->
-      case File.read(file_path) do
-        {:ok, content} ->
-          {frontmatter, markdown_content} = parse_frontmatter(content)
-          date_str = Map.get(frontmatter, "date")
-          title = extract_title(file_path, markdown_content)
-          [%Note{
-            title: title,
-            date: date_str,
-            content: markdown_content,
-            content_html: markdown_to_html(markdown_content),
-            file_path: file_path
-          }]
-        {:error, _} ->
-          []
-      end
-    end)
+    notes =
+      matching_files
+      |> Enum.flat_map(fn file_path ->
+        case File.read(file_path) do
+          {:ok, content} ->
+            {frontmatter, markdown_content} = parse_frontmatter(content)
+            date_str = Map.get(frontmatter, "date")
+            title = extract_title(file_path, markdown_content)
+
+            [
+              %Note{
+                title: title,
+                date: date_str,
+                content: markdown_content,
+                content_html: markdown_to_html(markdown_content),
+                file_path: file_path
+              }
+            ]
+
+          {:error, _} ->
+            []
+        end
+      end)
 
     # Sort by the full date (year-month-day) in descending order
     Enum.sort(notes, fn note1, note2 ->
@@ -51,9 +56,11 @@ defmodule Mindari.Obsidian do
         case read_ets_cache() do
           {:ok, file_metadata} ->
             # Filter by date and convert to full paths
-            matching_files = file_metadata
-            |> Enum.filter(fn {_path, m, d, _date_str} -> m == month && d == day end)
-            |> Enum.map(fn {relative_path, _, _, _} -> Path.join(vault_path, relative_path) end)
+            matching_files =
+              file_metadata
+              |> Enum.filter(fn {_path, m, d, _date_str} -> m == month && d == day end)
+              |> Enum.map(fn {relative_path, _, _, _} -> Path.join(vault_path, relative_path) end)
+
             matching_files
 
           :cache_miss ->
@@ -63,30 +70,43 @@ defmodule Mindari.Obsidian do
 
             # Build metadata cache with date info
             metadata_start = System.monotonic_time(:millisecond)
-            file_metadata = files
-            |> Enum.flat_map(fn file_path ->
-              relative_path = String.replace_prefix(file_path, vault_path <> "/", "")
-              case File.read(file_path) do
-                {:ok, content} ->
-                  {frontmatter, _} = parse_frontmatter(content)
-                  case Map.get(frontmatter, "date") do
-                    nil -> []
-                    date_str ->
-                      case parse_date_string(date_str) do
-                        {:ok, date} ->
-                          [{relative_path, date.month, date.day, date_str}]
-                        :error ->
-                          []
-                      end
-                  end
-                {:error, _} -> []
-              end
-            end)
+
+            file_metadata =
+              files
+              |> Enum.flat_map(fn file_path ->
+                relative_path = String.replace_prefix(file_path, vault_path <> "/", "")
+
+                case File.read(file_path) do
+                  {:ok, content} ->
+                    {frontmatter, _} = parse_frontmatter(content)
+
+                    case Map.get(frontmatter, "date") do
+                      nil ->
+                        []
+
+                      date_str ->
+                        case parse_date_string(date_str) do
+                          {:ok, date} ->
+                            [{relative_path, date.month, date.day, date_str}]
+
+                          :error ->
+                            []
+                        end
+                    end
+
+                  {:error, _} ->
+                    []
+                end
+              end)
+
             metadata_time = System.monotonic_time(:millisecond) - metadata_start
             total_time = scan_time + metadata_time
 
             write_ets_cache(file_metadata)
-            Logger.debug("Rebuilt Obsidian cache: #{length(files)} files scanned, #{length(file_metadata)} with dates (#{total_time}ms)")
+
+            Logger.debug(
+              "Rebuilt Obsidian cache: #{length(files)} files scanned, #{length(file_metadata)} with dates (#{total_time}ms)"
+            )
 
             # Filter and return full paths for current request
             file_metadata
@@ -105,11 +125,13 @@ defmodule Mindari.Obsidian do
         # Check if cache is stale (older than 1 hour)
         current_time = System.system_time(:second)
         age = current_time - timestamp
+
         if age < 3600 do
           {:ok, files}
         else
           :cache_miss
         end
+
       [] ->
         :cache_miss
     end
@@ -119,7 +141,6 @@ defmodule Mindari.Obsidian do
     timestamp = System.system_time(:second)
     :ets.insert(@cache_table, {:file_list, files, timestamp})
   end
-
 
   defp parse_frontmatter(content) do
     case String.split(content, ~r/^---\s*$/m, parts: 3) do
@@ -162,22 +183,42 @@ defmodule Mindari.Obsidian do
   def markdown_to_html(markdown) do
     # Simple markdown to HTML conversion with dark theme styling
     markdown
-    |> String.replace(~r/^#\s+(.+)$/m, "<h1 class=\"text-2xl font-bold text-gray-100 mb-4\">\\1</h1>")
-    |> String.replace(~r/^##\s+(.+)$/m, "<h2 class=\"text-xl font-semibold text-gray-200 mb-3\">\\1</h2>")
-    |> String.replace(~r/^###\s+(.+)$/m, "<h3 class=\"text-lg font-medium text-gray-300 mb-2\">\\1</h3>")
-    |> String.replace(~r/\*\*(.+?)\*\*/m, "<strong class=\"font-semibold text-gray-100\">\\1</strong>")
+    |> String.replace(
+      ~r/^#\s+(.+)$/m,
+      "<h1 class=\"text-2xl font-bold text-gray-100 mb-4\">\\1</h1>"
+    )
+    |> String.replace(
+      ~r/^##\s+(.+)$/m,
+      "<h2 class=\"text-xl font-semibold text-gray-200 mb-3\">\\1</h2>"
+    )
+    |> String.replace(
+      ~r/^###\s+(.+)$/m,
+      "<h3 class=\"text-lg font-medium text-gray-300 mb-2\">\\1</h3>"
+    )
+    |> String.replace(
+      ~r/\*\*(.+?)\*\*/m,
+      "<strong class=\"font-semibold text-gray-100\">\\1</strong>"
+    )
     |> String.replace(~r/\*(.+?)\*/m, "<em class=\"italic text-gray-300\">\\1</em>")
-    |> String.replace(~r/\[([^\]]+)\]\(([^)]+)\)/m, "<a href=\"\\2\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-400 hover:text-blue-300 underline\">\\1 <span class=\"text-xs\">↗</span></a>")
-    |> String.replace(~r/\[\[([^\]]+)\]\]/m, "<a href=\"obsidian://open?vault=Vault&file=\\1\" class=\"text-purple-400 hover:text-purple-300 underline decoration-purple-400/50\" style=\"color: #a855f7; text-decoration: underline;\" data-obsidian-link=\"\\1\">\\1</a>")
+    |> String.replace(
+      ~r/\[([^\]]+)\]\(([^)]+)\)/m,
+      "<a href=\"\\2\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-400 hover:text-blue-300 underline\">\\1 <span class=\"text-xs\">↗</span></a>"
+    )
+    |> String.replace(
+      ~r/\[\[([^\]]+)\]\]/m,
+      "<a href=\"obsidian://open?vault=Vault&file=\\1\" class=\"text-purple-400 hover:text-purple-300 underline decoration-purple-400/50\" style=\"color: #a855f7; text-decoration: underline;\" data-obsidian-link=\"\\1\">\\1</a>"
+    )
     |> String.replace(~r/^- (.+)$/m, "<li class=\"text-gray-300 mb-1 ml-4\">\\1</li>")
     |> String.replace(~r/\[x\]/m, "<span class=\"text-green-400\">✓</span>")
     |> String.replace(~r/\[ \]/m, "<span class=\"text-gray-500\">☐</span>")
     |> String.replace(~r/\n\n/m, "</p><p class=\"text-gray-300 mb-4 leading-relaxed\">")
     |> (&("<p class=\"text-gray-300 mb-4 leading-relaxed\">" <> &1 <> "</p>")).()
     |> String.replace("<p class=\"text-gray-300 mb-4 leading-relaxed\"></p>", "")
-    |> String.replace(~r/<li class="text-gray-300 mb-1 ml-4">(.+?)<\/li>/m, "<ul class=\"list-disc list-inside mb-4 space-y-1\"><li class=\"text-gray-300 mb-1 ml-4\">\\1</li></ul>")
+    |> String.replace(
+      ~r/<li class="text-gray-300 mb-1 ml-4">(.+?)<\/li>/m,
+      "<ul class=\"list-disc list-inside mb-4 space-y-1\"><li class=\"text-gray-300 mb-1 ml-4\">\\1</li></ul>"
+    )
   end
-
 
   defp parse_date_string(date_str) when is_binary(date_str) do
     date_str = String.trim(date_str)
@@ -250,7 +291,8 @@ defmodule Mindari.Obsidian do
   defp parse_date_for_sorting(date_str) when is_binary(date_str) do
     case parse_date_string(date_str) do
       {:ok, date} -> date
-      :error -> ~D[1900-01-01]  # Default date for unparseable dates
+      # Default date for unparseable dates
+      :error -> ~D[1900-01-01]
     end
   end
 
@@ -258,18 +300,30 @@ defmodule Mindari.Obsidian do
 
   defp month_name_to_number(month_str) do
     month_map = %{
-      "january" => 1, "jan" => 1,
-      "february" => 2, "feb" => 2,
-      "march" => 3, "mar" => 3,
-      "april" => 4, "apr" => 4,
+      "january" => 1,
+      "jan" => 1,
+      "february" => 2,
+      "feb" => 2,
+      "march" => 3,
+      "mar" => 3,
+      "april" => 4,
+      "apr" => 4,
       "may" => 5,
-      "june" => 6, "jun" => 6,
-      "july" => 7, "jul" => 7,
-      "august" => 8, "aug" => 8,
-      "september" => 9, "sep" => 9, "sept" => 9,
-      "october" => 10, "oct" => 10,
-      "november" => 11, "nov" => 11,
-      "december" => 12, "dec" => 12
+      "june" => 6,
+      "jun" => 6,
+      "july" => 7,
+      "jul" => 7,
+      "august" => 8,
+      "aug" => 8,
+      "september" => 9,
+      "sep" => 9,
+      "sept" => 9,
+      "october" => 10,
+      "oct" => 10,
+      "november" => 11,
+      "nov" => 11,
+      "december" => 12,
+      "dec" => 12
     }
 
     case Map.get(month_map, String.downcase(month_str)) do

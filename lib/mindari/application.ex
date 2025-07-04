@@ -9,7 +9,7 @@ defmodule Mindari.Application do
   def start(_type, _args) do
     # Create ETS table for Obsidian file caching at application startup
     :ets.new(:obsidian_files_cache, [:set, :public, :named_table])
-    
+
     children = [
       MindariWeb.Telemetry,
       Mindari.Repo,

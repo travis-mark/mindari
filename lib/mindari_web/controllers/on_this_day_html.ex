@@ -27,7 +27,8 @@ defmodule MindariWeb.OnThisDayHTML do
   """
   def previous_day_label(month, day) do
     {prev_month, prev_day} = previous_day(month, day)
-    date = Date.new!(Date.utc_today().year, prev_month, prev_day)
+    {{current_year, _, _}, _} = :calendar.local_time()
+    date = Date.new!(current_year, prev_month, prev_day)
     Calendar.strftime(date, "%b %d")
   end
 
@@ -36,27 +37,32 @@ defmodule MindariWeb.OnThisDayHTML do
   """
   def next_day_label(month, day) do
     {next_month, next_day} = next_day(month, day)
-    date = Date.new!(Date.utc_today().year, next_month, next_day)
+    {{current_year, _, _}, _} = :calendar.local_time()
+    date = Date.new!(current_year, next_month, next_day)
     Calendar.strftime(date, "%b %d")
   end
 
   defp previous_day(month, day) do
-    current_year = Date.utc_today().year
+    {{current_year, _, _}, _} = :calendar.local_time()
+
     case Date.new(current_year, month, day) do
       {:ok, date} ->
         prev_date = Date.add(date, -1)
         {prev_date.month, prev_date.day}
+
       {:error, _} ->
         {month, day}
     end
   end
 
   defp next_day(month, day) do
-    current_year = Date.utc_today().year
+    {{current_year, _, _}, _} = :calendar.local_time()
+
     case Date.new(current_year, month, day) do
       {:ok, date} ->
         next_date = Date.add(date, 1)
         {next_date.month, next_date.day}
+
       {:error, _} ->
         {month, day}
     end
@@ -78,7 +84,7 @@ defmodule MindariWeb.OnThisDayHTML do
   def obsidian_uri(file_path) do
     # Extract the vault name and note path relative to the vault
     vault_base = "/Users/travis/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault"
-    
+
     case String.starts_with?(file_path, vault_base) do
       true ->
         # Get the relative path from the vault root
@@ -87,14 +93,120 @@ defmodule MindariWeb.OnThisDayHTML do
         note_name = String.replace_suffix(relative_path, ".md", "")
         # URL encode the note name
         encoded_note = URI.encode(note_name)
-        
+
         "obsidian://open?vault=Vault&file=#{encoded_note}"
-        
+
       false ->
         # Fallback for files outside the expected vault path
         file_name = Path.basename(file_path, ".md")
         encoded_name = URI.encode(file_name)
         "obsidian://open?vault=Vault&file=#{encoded_name}"
     end
+  end
+
+  @doc """
+  Generates calendar data for the current month.
+  """
+  def calendar_data(month, day) do
+    {{current_year, _, _}, _} = :calendar.local_time()
+    {{_, today_month, today_day}, _} = :calendar.local_time()
+    {:ok, today} = Date.new(current_year, today_month, today_day)
+
+    case Date.new(current_year, month, 1) do
+      {:ok, first_day} ->
+        days_in_month = Date.days_in_month(first_day)
+        start_weekday = Date.day_of_week(first_day, :sunday)
+
+        %{
+          month: month,
+          year: current_year,
+          month_name: Calendar.strftime(first_day, "%B"),
+          days_in_month: days_in_month,
+          start_weekday: start_weekday,
+          current_day: day,
+          today: today
+        }
+
+      {:error, _} ->
+        %{
+          month: today.month,
+          year: today.year,
+          month_name: Calendar.strftime(today, "%B"),
+          days_in_month: Date.days_in_month(today),
+          start_weekday: Date.day_of_week(Date.new!(today.year, today.month, 1), :sunday),
+          current_day: today.day,
+          today: today
+        }
+    end
+  end
+
+  @doc """
+  Generates path for previous month navigation.
+  """
+  def previous_month_path(month, _day) do
+    {prev_month, _prev_year} = previous_month(month)
+    # Use day 1 for month navigation
+    ~p"/onthisday?month=#{prev_month}&day=1"
+  end
+
+  @doc """
+  Generates path for next month navigation.
+  """
+  def next_month_path(month, _day) do
+    {next_month, _next_year} = next_month(month)
+    # Use day 1 for month navigation
+    ~p"/onthisday?month=#{next_month}&day=1"
+  end
+
+  defp previous_month(month) do
+    {{current_year, _, _}, _} = :calendar.local_time()
+
+    if month == 1 do
+      {12, current_year - 1}
+    else
+      {month - 1, current_year}
+    end
+  end
+
+  defp next_month(month) do
+    {{current_year, _, _}, _} = :calendar.local_time()
+
+    if month == 12 do
+      {1, current_year + 1}
+    else
+      {month + 1, current_year}
+    end
+  end
+
+  @doc """
+  Generates a list of calendar days with their properties.
+  """
+  def calendar_days(calendar_data) do
+    %{
+      month: month,
+      days_in_month: days_in_month,
+      start_weekday: start_weekday,
+      current_day: current_day,
+      today: today
+    } = calendar_data
+
+    # Add empty days for the start of the month
+    empty_days = for _ <- 1..(start_weekday - 1), do: nil
+
+    # Add actual days
+    month_days =
+      for day <- 1..days_in_month do
+        is_today = today.month == month && today.day == day
+        is_current = day == current_day
+
+        %{
+          day: day,
+          is_current: is_current,
+          is_today: is_today && !is_current,
+          path: ~p"/onthisday?month=#{month}&day=#{day}"
+        }
+      end
+
+    empty_days ++ month_days
   end
 end
