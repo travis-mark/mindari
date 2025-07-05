@@ -8,10 +8,10 @@ defmodule Mindari.DataCase do
 
   Finally, if the test case interacts with the database,
   we enable the SQL sandbox, so changes done to the database
-  are reverted at the end of every test. If you are using
-  PostgreSQL, you can even run database tests asynchronously
-  by setting `use Mindari.DataCase, async: true`, although
-  this option is not recommended for other databases.
+  are reverted at the end of every test. For SQLite3, database 
+  tests should generally be run synchronously by keeping 
+  `use Mindari.DataCase, async: false` to avoid database locking 
+  issues that can occur with concurrent access.
   """
 
   use ExUnit.CaseTemplate

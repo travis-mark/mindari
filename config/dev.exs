@@ -2,10 +2,7 @@ import Config
 
 # Configure your database
 config :mindari, Mindari.Repo,
-  username: "postgres",
-  password: "hasta-railroad-sailors",
-  hostname: "localhost",
-  database: "mindari_dev",
+  database: "priv/repo/mindari_dev.db",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
