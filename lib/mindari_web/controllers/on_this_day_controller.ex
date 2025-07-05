@@ -5,7 +5,7 @@ defmodule MindariWeb.OnThisDayController do
     {month, day} = parse_date_params(params)
     notes = Mindari.Obsidian.get_notes_for_date(month, day)
 
-    render(conn, :index, notes: notes, month: month, day: day)
+    render(conn, :index, notes: notes, month: month, day: day, page_title: "On This Day")
   end
 
   defp parse_date_params(%{"month" => month_str, "day" => day_str}) do
