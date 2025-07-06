@@ -39,3 +39,5 @@ priv/repo/mindari_dev.db
 priv/repo/mindari_test.db
 priv/repo/mindari_test.db-shm
 priv/repo/mindari_test.db-wal
+priv/repo/mindari_dev.db-wal
+priv/repo/mindari_dev.db-shm
