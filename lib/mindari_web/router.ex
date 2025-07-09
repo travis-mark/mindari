@@ -22,7 +22,6 @@ defmodule MindariWeb.Router do
 
     get "/", PageController, :home
     get "/onthisday", OnThisDayController, :index
-    resources "/products", ProductController
   end
 
   # Other scopes may use custom stacks.
