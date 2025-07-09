@@ -1,0 +1,154 @@
+<Layouts.flash_group flash={@flash} />
+<div class="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 xl:px-28">
+  <div class="mx-auto max-w-7xl">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-base-content">Dashboard</h1>
+        <p class="text-base-content/70 mt-1">Your knowledge analytics</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-sm text-base-content/60">
+          <span class="font-medium">Today:</span> <%= Date.utc_today() |> Calendar.strftime("%B %d, %Y") %>
+        </div>
+        <Layouts.theme_toggle />
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-base-200 rounded-box p-4">
+        <div class="text-2xl font-bold text-base-content"><%= @dashboard_data.stats.total_notes %></div>
+        <div class="text-sm text-base-content/70">Total Notes</div>
+      </div>
+      <div class="bg-base-200 rounded-box p-4">
+        <div class="text-2xl font-bold text-base-content"><%= @dashboard_data.stats.this_week %></div>
+        <div class="text-sm text-base-content/70">This Week</div>
+      </div>
+      <div class="bg-base-200 rounded-box p-4">
+        <div class="text-2xl font-bold text-base-content"><%= @dashboard_data.stats.active_days %></div>
+        <div class="text-sm text-base-content/70">Days Active</div>
+      </div>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <a href="/onthisday" class="group relative rounded-box bg-base-200 p-6 hover:bg-base-300 transition-colors">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-primary/10 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6 text-primary">
+              <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-base-content">On This Day</h3>
+            <p class="text-sm text-base-content/70">Historical notes and memories</p>
+          </div>
+        </div>
+        <div class="text-sm text-base-content/60">
+          <div class="mb-1">Today: <%= @dashboard_data.today_notes_count %> notes</div>
+          <div>This month: <%= @dashboard_data.month_notes_count %> notes</div>
+        </div>
+      </a>
+
+      <div class="group relative rounded-box bg-base-200 p-6 opacity-50">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-secondary/10 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6 text-secondary">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2"/>
+              <path d="M7.5 4.21l4.5 2.6 4.5-2.6M7.5 19.79V14.6L3 12M21 12l-4.5 2.6v5.19M12 22.08V17" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-base-content">Knowledge Graph</h3>
+            <p class="text-sm text-base-content/70">Explore connections (Coming Soon)</p>
+          </div>
+        </div>
+        <div class="text-sm text-base-content/60">
+          <div class="mb-1">Nodes: 0</div>
+          <div>Connections: 0</div>
+        </div>
+      </div>
+
+      <div class="group relative rounded-box bg-base-200 p-6 opacity-50">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-accent/10 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6 text-accent">
+              <path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-base-content">Search</h3>
+            <p class="text-sm text-base-content/70">Find anything (Coming Soon)</p>
+          </div>
+        </div>
+        <div class="text-sm text-base-content/60">
+          <div class="mb-1">Indexed: 0</div>
+          <div>Last updated: Never</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-base-200 rounded-box p-6 mb-8">
+      <h2 class="text-xl font-semibold text-base-content mb-4">Recent Activity</h2>
+      <div class="space-y-3">
+        <%= if Enum.empty?(@dashboard_data.recent_activity) do %>
+          <div class="text-center py-8 text-base-content/60">
+            <div class="text-sm">No recent activity</div>
+          </div>
+        <% else %>
+          <%= for activity <- @dashboard_data.recent_activity do %>
+            <div class="flex items-center gap-3 p-3 bg-base-100 rounded-lg">
+              <div class="w-2 h-2 bg-primary rounded-full"></div>
+              <div class="flex-1">
+                <div class="text-sm font-medium text-base-content"><%= activity.text %></div>
+                <div class="text-xs text-base-content/60"><%= activity.time %></div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Statistics Panel -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-base-200 rounded-box p-6">
+        <h3 class="text-lg font-semibold text-base-content mb-4">Usage Statistics</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Most active day</span>
+            <span class="text-sm font-medium text-base-content">Today</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Average notes per day</span>
+            <span class="text-sm font-medium text-base-content">1.7</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Longest streak</span>
+            <span class="text-sm font-medium text-base-content"><%= @dashboard_data.stats.longest_streak %> days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-base-200 rounded-box p-6">
+        <h3 class="text-lg font-semibold text-base-content mb-4">Content Overview</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Total words written</span>
+            <span class="text-sm font-medium text-base-content"><%= @dashboard_data.stats.total_words %></span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Average note length</span>
+            <span class="text-sm font-medium text-base-content"><%= @dashboard_data.stats.avg_note_length %> words</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Most used tag</span>
+            <span class="text-sm font-medium text-base-content">#personal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

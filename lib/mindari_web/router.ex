@@ -20,8 +20,9 @@ defmodule MindariWeb.Router do
   scope "/", MindariWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    get "/", HomeController, :index
     get "/onthisday", OnThisDayController, :index
+    get "/dashboard", DashboardController, :index
   end
 
   # Other scopes may use custom stacks.

@@ -1,0 +1,62 @@
+<Layouts.flash_group flash={@flash} />
+<div class="px-4 py-10 sm:px-6 sm:py-28 lg:px-8 xl:px-28 xl:py-32">
+  <div class="mx-auto max-w-xl lg:mx-0">
+    <div class="flex justify-between items-center mb-10">
+      <div>
+        <h1 class="text-4xl font-bold text-base-content">Mindari</h1>
+        <p class="text-base-content/70 mt-2">Your personal knowledge companion</p>
+      </div>
+      <Layouts.theme_toggle />
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
+      <a
+        href="/onthisday"
+        class="group relative rounded-box bg-base-200 p-8 hover:bg-base-300 transition-colors"
+      >
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-primary/10 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-primary">
+              <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-base-content">On This Day</h2>
+            <p class="text-sm text-base-content/70">View historical notes and memories</p>
+          </div>
+        </div>
+        <div class="text-sm text-base-content/60">
+          Explore notes from previous years on this date
+        </div>
+      </a>
+
+      <a
+        href="/dashboard"
+        class="group relative rounded-box bg-base-200 p-8 hover:bg-base-300 transition-colors"
+      >
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-secondary/10 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-secondary">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-base-content">Dashboard</h2>
+            <p class="text-sm text-base-content/70">View analytics and statistics</p>
+          </div>
+        </div>
+        <div class="text-sm text-base-content/60">
+          Detailed insights into your knowledge patterns
+        </div>
+      </a>
+    </div>
+
+    <div class="mt-16 text-center">
+      <div class="text-sm text-base-content/60">
+        <div class="mb-2">Today: <%= Date.utc_today() |> Calendar.strftime("%B %d, %Y") %></div>
+        <div>Welcome to your personal knowledge companion</div>
+      </div>
+    </div>
+  </div>
+</div>
