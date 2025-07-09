@@ -9,7 +9,7 @@
       </div>
       <div class="flex items-center gap-4">
         <div class="text-sm text-base-content/60">
-          <span class="font-medium">Today:</span> <%= Date.utc_today() |> Calendar.strftime("%B %d, %Y") %>
+          <span class="font-medium">Today:</span> <%= elem(:calendar.local_time(), 0) |> Date.from_erl!() |> Calendar.strftime("%B %d, %Y") %>
         </div>
         <Layouts.theme_toggle />
       </div>
