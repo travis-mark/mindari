@@ -1,33 +1,59 @@
-<div class="min-h-screen bg-gray-900 text-gray-100">
-  <div class="flex max-w-7xl mx-auto px-4 py-8">
-    <!-- Sidebar - Desktop only -->
-    <div class="hidden lg:block w-64 mr-4 flex-shrink-0">
-      <!-- Home link -->
-      <div class="mb-4">
-        <.link
-          href={~p"/"}
-          class="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            >
-            </path>
-          </svg>
-          Home
-        </.link>
+<Layouts.flash_group flash={@flash} />
+<div class="px-4 py-10 sm:px-6 lg:px-8 xl:px-28">
+  <div class="mx-auto max-w-7xl lg:mx-0">
+    <!-- Mobile Header with Navigation -->
+    <div class="lg:hidden mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h1 class="text-3xl font-bold text-base-content">On This Day</h1>
+          <p class="text-base-content/70 mt-1">
+            <% {{current_year, _, _}, _} = :calendar.local_time() %>
+            {Calendar.strftime(Date.new!(current_year, @month, @day), "%A, %B %d")}
+          </p>
+        </div>
+        <Layouts.theme_toggle />
       </div>
       
-      <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 sticky top-8">
+      <!-- Day Navigation for Mobile -->
+      <nav class="flex justify-between items-center">
+        <.link
+          href={previous_day_path(@month, @day)}
+          class="text-primary hover:text-primary/80 transition-colors flex items-center"
+        >
+          ← {previous_day_label(@month, @day)}
+        </.link>
+
+        <.link
+          href={next_day_path(@month, @day)}
+          class="text-primary hover:text-primary/80 transition-colors flex items-center"
+        >
+          {next_day_label(@month, @day)} →
+        </.link>
+      </nav>
+    </div>
+
+    <!-- Desktop Header -->
+    <div class="hidden lg:flex justify-between items-center mb-10">
+      <div>
+        <h1 class="text-4xl font-bold text-base-content">On This Day</h1>
+        <p class="text-base-content/70 mt-2">
+          <% {{current_year, _, _}, _} = :calendar.local_time() %>
+          {Calendar.strftime(Date.new!(current_year, @month, @day), "%A, %B %d")}
+        </p>
+      </div>
+      <Layouts.theme_toggle />
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Sidebar - Calendar (Desktop only) -->
+      <div class="hidden lg:block w-64 flex-shrink-0">
+        <div class="bg-base-200 rounded-box p-4 border border-base-300 sticky top-8">
         <% calendar = calendar_data(@month, @day) %>
         <div class="mb-4">
           <div class="flex items-center justify-between mb-4">
             <.link
               href={previous_month_path(@month, @day)}
-              class="text-gray-400 hover:text-gray-200 transition-colors"
+              class="text-primary hover:text-primary/80 transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -39,12 +65,12 @@
                 </path>
               </svg>
             </.link>
-            <h2 class="text-lg font-semibold text-gray-100 text-center">
+            <h2 class="text-lg font-semibold text-base-content text-center">
               {calendar.month_name} {calendar.year}
             </h2>
             <.link
               href={next_month_path(@month, @day)}
-              class="text-gray-400 hover:text-gray-200 transition-colors"
+              class="text-primary hover:text-primary/80 transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -62,7 +88,7 @@
           <div class="grid grid-cols-7 gap-1 text-xs">
             <!-- Day headers -->
             <%= for day_name <- ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] do %>
-              <div class="text-center font-medium text-gray-400 py-2">
+              <div class="text-center font-medium text-base-content/60 py-2">
                 {day_name}
               </div>
             <% end %>
@@ -77,9 +103,9 @@
                   class={[
                     "aspect-square flex items-center justify-center rounded text-center transition-colors text-sm",
                     cond do
-                      day_data.is_current -> "bg-blue-600 text-white font-bold"
-                      day_data.is_today -> "bg-gray-700 text-gray-200 ring-1 ring-gray-600"
-                      true -> "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      day_data.is_current -> "bg-accent text-primary-content font-bold"
+                      day_data.is_today -> "bg-base-300 text-base-content ring-1 ring-base-content/20"
+                      true -> "text-base-content/70 hover:bg-base-300 hover:text-base-content"
                     end
                   ]}
                 >
@@ -89,55 +115,30 @@
             <% end %>
           </div>
         </div>
+        </div>
       </div>
-    </div>
     
-<!-- Main content -->
-    <div class="flex-1 min-w-0">
-      <!-- Navigation - Mobile only -->
-      <nav class="lg:hidden flex justify-between items-center mb-6">
-        <.link
-          href={previous_day_path(@month, @day)}
-          class="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
-        >
-          ← {previous_day_label(@month, @day)}
-        </.link>
-
-        <.link
-          href={next_day_path(@month, @day)}
-          class="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
-        >
-          {next_day_label(@month, @day)} →
-        </.link>
-      </nav>
-
-      <header class="text-gray-100 mb-8">
-        <h1 class="text-3xl font-bold text-gray-100">
-          <% {{current_year, _, _}, _} = :calendar.local_time() %> On This Day - {Calendar.strftime(
-            Date.new!(current_year, @month, @day),
-            "%A, %B %d"
-          )}
-        </h1>
-      </header>
+      <!-- Main content -->
+      <div class="flex-1 min-w-0">
 
       <div class="space-y-6">
         <%= if Enum.empty?(@notes) do %>
           <div class="text-center py-12">
-            <p class="text-gray-400">No notes found for this date.</p>
+            <p class="text-base-content/60">No notes found for this date.</p>
           </div>
         <% else %>
           <%= for note <- @notes do %>
-            <div class="bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-700 max-w-4xl">
+            <div class="bg-base-200 shadow-lg rounded-box p-6 border border-base-300 max-w-4xl">
               <h3 class="text-xl font-semibold mb-2">
                 <a
                   href={obsidian_uri(note.file_path)}
-                  class="text-blue-400 hover:text-blue-300 transition-colors hover:underline"
+                  class="text-primary hover:text-primary/80 transition-colors hover:underline"
                 >
                   {note.title}
                 </a>
               </h3>
-              <p class="text-sm text-gray-400 mb-4">Date: {note.date}</p>
-              <div class="prose prose-invert max-w-3xl text-gray-300 leading-relaxed">
+              <p class="text-sm text-base-content/60 mb-4">Date: {note.date}</p>
+              <div class="prose max-w-3xl text-base-content leading-relaxed">
                 {raw(clean_content_html(note.content_html, note.title))}
               </div>
             </div>
@@ -145,11 +146,7 @@
         <% end %>
       </div>
 
-      <div class="mt-8">
-        <.link href={~p"/"} class="text-blue-400 hover:text-blue-300 transition-colors">
-          ← Back to Home
-        </.link>
-      </div>
+    </div>
     </div>
   </div>
 </div>
