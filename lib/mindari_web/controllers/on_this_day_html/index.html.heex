@@ -4,13 +4,10 @@
     <!-- Mobile Header with Navigation -->
     <div class="lg:hidden mb-8">
       <div class="flex justify-between items-center mb-4">
-        <div>
-          <h1 class="text-3xl font-bold text-base-content">On This Day</h1>
-          <p class="text-base-content/70 mt-1">
-            <% {{current_year, _, _}, _} = :calendar.local_time() %>
-            {Calendar.strftime(Date.new!(current_year, @month, @day), "%A, %B %d")}
-          </p>
-        </div>
+        <h1 class="text-3xl font-bold text-base-content">On This Day</h1>
+        <p class="text-base-content/70 text-right">
+          {formatted_date(@month, @day)}
+        </p>
       </div>
       
       <!-- Day Navigation for Mobile -->
@@ -33,13 +30,10 @@
 
     <!-- Desktop Header -->
     <div class="hidden lg:flex justify-between items-center mb-10">
-      <div>
-        <h1 class="text-4xl font-bold text-base-content">On This Day</h1>
-        <p class="text-base-content/70 mt-2">
-          <% {{current_year, _, _}, _} = :calendar.local_time() %>
-          {Calendar.strftime(Date.new!(current_year, @month, @day), "%A, %B %d")}
-        </p>
-      </div>
+      <h1 class="text-4xl font-bold text-base-content">On This Day</h1>
+      <p class="text-base-content/70 text-right">
+        {formatted_date(@month, @day)}
+      </p>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6">
@@ -127,15 +121,19 @@
         <% else %>
           <%= for note <- @notes do %>
             <div class="bg-base-200 shadow-lg rounded-box p-6 border border-base-300 max-w-4xl">
-              <h3 class="text-xl font-semibold mb-2">
-                <a
-                  href={obsidian_uri(note.file_path)}
-                  class="text-primary hover:text-primary/80 transition-colors hover:underline"
-                >
-                  {note.title}
-                </a>
-              </h3>
-              <p class="text-sm text-base-content/60 mb-4">Date: {note.date}</p>
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">
+                  <a
+                    href={obsidian_uri(note.file_path)}
+                    class="text-primary hover:text-primary/80 transition-colors hover:underline"
+                  >
+                    {note.title}
+                  </a>
+                </h3>
+                <p class="text-sm text-base-content/60 text-right ml-4">
+                  {formatted_entry_date(note.date)}
+                </p>
+              </div>
               <div class="prose max-w-3xl text-base-content leading-relaxed">
                 {raw(clean_content_html(note.content_html, note.title))}
               </div>

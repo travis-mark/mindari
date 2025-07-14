@@ -179,6 +179,45 @@ defmodule MindariWeb.OnThisDayHTML do
   end
 
   @doc """
+  Formats the date for display with day-of-week, month, day-of-month, year format.
+  """
+  def formatted_date(month, day) do
+    {{current_year, _, _}, _} = :calendar.local_time()
+    case Date.new(current_year, month, day) do
+      {:ok, date} ->
+        Calendar.strftime(date, "%A, %B %d, %Y")
+      {:error, _} ->
+        "Invalid date"
+    end
+  end
+
+  @doc """
+  Formats an entry date string for display.
+  """
+  def formatted_entry_date(date_string) do
+    cond do
+      # Handle datetime format like "2025-07-14T17:02"
+      String.contains?(date_string, "T") ->
+        [date_part | _] = String.split(date_string, "T")
+        case Date.from_iso8601(date_part) do
+          {:ok, date} ->
+            Calendar.strftime(date, "%A, %B %d, %Y")
+          {:error, _} ->
+            date_string
+        end
+      
+      # Handle date-only format like "2025-07-14"
+      true ->
+        case Date.from_iso8601(date_string) do
+          {:ok, date} ->
+            Calendar.strftime(date, "%A, %B %d, %Y")
+          {:error, _} ->
+            date_string
+        end
+    end
+  end
+
+  @doc """
   Generates a list of calendar days with their properties.
   """
   def calendar_days(calendar_data) do
