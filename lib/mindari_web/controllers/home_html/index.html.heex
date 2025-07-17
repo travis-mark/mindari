@@ -49,6 +49,29 @@
           Detailed insights into your knowledge patterns
         </div>
       </a>
+
+      <%= if @dev_routes_enabled do %>
+        <a
+          href="/dev/dashboard"
+          class="group relative rounded-box bg-base-200 p-8 hover:bg-base-300 transition-colors"
+        >
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-accent/10 rounded-lg">
+              <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-accent">
+                <path d="M12 2v10l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-semibold text-base-content">Dev Dashboard</h2>
+              <p class="text-sm text-base-content/70">Phoenix LiveDashboard</p>
+            </div>
+          </div>
+          <div class="text-sm text-base-content/60">
+            Application metrics and performance monitoring
+          </div>
+        </a>
+      <% end %>
     </div>
 
     <div class="mt-16 text-center">
