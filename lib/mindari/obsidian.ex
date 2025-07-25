@@ -5,7 +5,7 @@ defmodule Mindari.Obsidian do
 
   require Logger
 
-  @vault_path "/Users/travis/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault"
+  @vault_path "/Users/travis/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/journal"
   @cache_table :obsidian_files_cache
 
   defmodule Note do
