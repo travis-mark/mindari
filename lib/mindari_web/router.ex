@@ -73,6 +73,11 @@ defmodule MindariWeb.Router do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+
+      live "/counter", CounterLive.Index, :index
+      live "/counter/new", CounterLive.Form, :new
+      live "/counter/:id", CounterLive.Show, :show
+      live "/counter/:id/edit", CounterLive.Form, :edit
     end
 
     post "/users/log-in", UserSessionController, :create
