@@ -71,8 +71,8 @@ defmodule MindariWeb.Router do
     live_session :current_user,
       on_mount: [{MindariWeb.UserAuth, :mount_current_scope}] do
       live "/users/register", UserLive.Registration, :new
-      live "/users/log-in", UserLive.Login, :new
-      live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/login", UserLive.Login, :new
+      live "/login/:token", UserLive.Confirmation, :new
 
       live "/counter", CounterLive.Index, :index
       live "/counter/new", CounterLive.Form, :new
@@ -80,7 +80,7 @@ defmodule MindariWeb.Router do
       live "/counter/:id/edit", CounterLive.Form, :edit
     end
 
-    post "/users/log-in", UserSessionController, :create
+    post "/login", UserSessionController, :create
     delete "/users/log-out", UserSessionController, :delete
   end
 end

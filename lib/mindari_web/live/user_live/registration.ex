@@ -12,7 +12,7 @@ defmodule MindariWeb.UserLive.Registration do
           Register for an account
           <:subtitle>
             Already registered?
-            <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
+            <.link navigate={~p"/login"} class="font-semibold text-brand hover:underline">
               Log in
             </.link>
             to your account now.
@@ -55,7 +55,7 @@ defmodule MindariWeb.UserLive.Registration do
         {:ok, _} =
           Accounts.deliver_login_instructions(
             user,
-            &url(~p"/users/log-in/#{&1}")
+            &url(~p"/login/#{&1}")
           )
 
         {:noreply,
@@ -64,7 +64,7 @@ defmodule MindariWeb.UserLive.Registration do
            :info,
            "An email was sent to #{user.email}, please access it to confirm your account."
          )
-         |> push_navigate(to: ~p"/users/log-in")}
+         |> push_navigate(to: ~p"/login")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

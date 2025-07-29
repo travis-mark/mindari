@@ -1,65 +1,52 @@
 <Layouts.flash_group flash={@flash} />
 <div class="px-4 py-10 sm:px-6 sm:py-28 lg:px-8 xl:px-28 xl:py-32">
   <div class="mx-auto max-w-xl lg:mx-0">
-    <div class="flex justify-between items-center mb-10">
-      <div>
-        <h1 class="text-4xl font-bold text-base-content">Mindari</h1>
-        <p class="text-base-content/70 mt-2">Your personal knowledge companion</p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
+  <h1 class="text-4xl font-bold text-base-content mb-4">Mindari</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <a
         href="/onthisday"
         class="group relative rounded-box bg-base-200 p-8 hover:bg-base-300 transition-colors"
       >
-        <div class="flex items-center gap-4 mb-4">
-          <div class="p-3 bg-primary/10 rounded-lg">
-            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-primary">
+        <div class="flex items-center gap-4">
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-accent">
               <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" stroke="currentColor" stroke-width="2"/>
             </svg>
           </div>
-          <div>
-            <h2 class="text-xl font-semibold text-base-content">On This Day</h2>
-            <p class="text-sm text-base-content/70">View historical notes and memories</p>
-          </div>
-        </div>
-        <div class="text-sm text-base-content/60">
-          Explore notes from previous years on this date
+          <h2 class="text-xl font-semibold text-base-content">On This Day</h2>
         </div>
       </a>
-
-
       <%= if @dev_routes_enabled do %>
         <a
           href="/dev/dashboard"
           class="group relative rounded-box bg-base-200 p-8 hover:bg-base-300 transition-colors"
         >
-          <div class="flex items-center gap-4 mb-4">
-            <div class="p-3 bg-accent/10 rounded-lg">
+          <div class="flex items-center gap-4">
+            <div>
               <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-accent">
                 <path d="M12 2v10l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
-            <div>
-              <h2 class="text-xl font-semibold text-base-content">Dev Dashboard</h2>
-              <p class="text-sm text-base-content/70">Phoenix LiveDashboard</p>
-            </div>
-          </div>
-          <div class="text-sm text-base-content/60">
-            Application metrics and performance monitoring
+            <h2 class="text-xl font-semibold text-base-content"> Dashboard</h2>
           </div>
         </a>
       <% end %>
-    </div>
-
-    <div class="mt-16 text-center">
-      <div class="text-sm text-base-content/60">
-        <div class="mb-2">Today: <%= elem(:calendar.local_time(), 0) |> Date.from_erl!() |> Calendar.strftime("%B %d, %Y") %></div>
-        <div>Welcome to your personal knowledge companion</div>
-      </div>
+      <a
+        href="/users/settings"
+        class="group relative rounded-box bg-base-200 p-8 hover:bg-base-300 transition-colors"
+      >
+        <div class="flex items-center gap-4">
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-accent">
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2 class="text-xl font-semibold text-base-content">Settings</h2>
+        </div>
+      </a>
     </div>
   </div>
 </div>

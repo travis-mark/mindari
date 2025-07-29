@@ -14,7 +14,7 @@ defmodule MindariWeb.UserLive.Confirmation do
           for={@form}
           id="confirmation_form"
           phx-submit="submit"
-          action={~p"/users/log-in?_action=confirmed"}
+          action={~p"/login?_action=confirmed"}
           phx-trigger-action={@trigger_submit}
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
@@ -34,7 +34,7 @@ defmodule MindariWeb.UserLive.Confirmation do
           for={@form}
           id="login_form"
           phx-submit="submit"
-          action={~p"/users/log-in"}
+          action={~p"/login"}
           phx-trigger-action={@trigger_submit}
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
@@ -65,7 +65,7 @@ defmodule MindariWeb.UserLive.Confirmation do
       {:ok,
        socket
        |> put_flash(:error, "Magic link is invalid or it has expired.")
-       |> push_navigate(to: ~p"/users/log-in")}
+       |> push_navigate(to: ~p"/login")}
     end
   end
 

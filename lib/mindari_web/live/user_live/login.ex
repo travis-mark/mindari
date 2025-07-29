@@ -22,44 +22,11 @@ defmodule MindariWeb.UserLive.Login do
           </:subtitle>
         </.header>
 
-        <div :if={local_mail_adapter?()} class="alert alert-info">
-          <.icon name="hero-information-circle" class="size-6 shrink-0" />
-          <div>
-            <p>You are running the local mail adapter.</p>
-            <p>
-              To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
-            </p>
-          </div>
-        </div>
-
-        <.form
-          :let={f}
-          for={@form}
-          id="login_form_magic"
-          action={~p"/users/log-in"}
-          phx-submit="submit_magic"
-        >
-          <.input
-            readonly={!!@current_scope}
-            field={f[:email]}
-            type="email"
-            label="Email"
-            autocomplete="username"
-            required
-            phx-mounted={JS.focus()}
-          />
-          <.button class="w-full" variant="primary">
-            Log in with email <span aria-hidden="true">→</span>
-          </.button>
-        </.form>
-
-        <div class="divider">or</div>
-
         <.form
           :let={f}
           for={@form}
           id="login_form_password"
-          action={~p"/users/log-in"}
+          action={~p"/login"}
           phx-submit="submit_password"
           phx-trigger-action={@trigger_submit}
         >
@@ -110,7 +77,7 @@ defmodule MindariWeb.UserLive.Login do
     if user = Accounts.get_user_by_email(email) do
       Accounts.deliver_login_instructions(
         user,
-        &url(~p"/users/log-in/#{&1}")
+        &url(~p"/login/#{&1}")
       )
     end
 
@@ -120,10 +87,6 @@ defmodule MindariWeb.UserLive.Login do
     {:noreply,
      socket
      |> put_flash(:info, info)
-     |> push_navigate(to: ~p"/users/log-in")}
-  end
-
-  defp local_mail_adapter? do
-    Application.get_env(:mindari, Mindari.Mailer)[:adapter] == Swoosh.Adapters.Local
+     |> push_navigate(to: ~p"/login")}
   end
 end
