@@ -6,7 +6,7 @@
       <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-4">
           <h1 class="text-3xl font-bold text-base-content">
-            <.link href="/" class="text-primary hover:text-primary/80">
+            <.link href="/">
               &lt;
             </.link>
             On This Day
@@ -21,14 +21,14 @@
       <nav class="flex justify-between items-center">
         <.link
           href={previous_day_path(@month, @day)}
-          class="text-primary hover:text-primary/80 transition-colors flex items-center"
+          class="flex items-center"
         >
           ← {previous_day_label(@month, @day)}
         </.link>
 
         <.link
           href={next_day_path(@month, @day)}
-          class="text-primary hover:text-primary/80 transition-colors flex items-center"
+          class="flex items-center"
         >
           {next_day_label(@month, @day)} →
         </.link>
@@ -39,9 +39,7 @@
     <div class="hidden lg:flex justify-between items-center mb-10">
       <div class="flex items-center gap-6">
         <h1 class="text-4xl font-bold text-base-content">
-          <.link href="/" class="text-primary hover:text-primary/80">
-            &lt;
-          </.link>
+          <.link href="/">&lt;</.link>
           On This Day
         </h1>
       </div>
@@ -57,10 +55,7 @@
         <% calendar = calendar_data(@month, @day) %>
         <div class="mb-4">
           <div class="flex items-center justify-between mb-4">
-            <.link
-              href={previous_month_path(@month, @day)}
-              class="text-primary hover:text-primary/80 transition-colors"
-            >
+            <.link href={previous_month_path(@month, @day)}>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -74,10 +69,7 @@
             <h2 class="text-lg font-semibold text-base-content text-center">
               {calendar.month_name} {calendar.year}
             </h2>
-            <.link
-              href={next_month_path(@month, @day)}
-              class="text-primary hover:text-primary/80 transition-colors"
-            >
+            <.link href={next_month_path(@month, @day)}>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -137,10 +129,7 @@
             <div class="bg-base-200 shadow-lg rounded-box p-6 border border-base-300 max-w-4xl">
               <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-semibold">
-                  <a
-                    href={obsidian_uri(note.file_path)}
-                    class="text-primary hover:text-primary/80 transition-colors hover:underline"
-                  >
+                  <a href={obsidian_uri(note.file_path)}>
                     {note.title}
                   </a>
                 </h3>

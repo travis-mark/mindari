@@ -66,3 +66,5 @@
 [data-phx-session] { display: contents }
 
 /* This file is for your main application CSS */
+a { color: #f1c40f; } 
+a:hover { text-decoration: underline;}
