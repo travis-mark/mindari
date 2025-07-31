@@ -4,7 +4,14 @@
     <!-- Mobile Header with Navigation -->
     <div class="lg:hidden mb-8">
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold text-base-content">On This Day</h1>
+        <div class="flex items-center gap-4">
+          <h1 class="text-3xl font-bold text-base-content">
+            <.link href="/" class="text-primary hover:text-primary/80">
+              &lt;
+            </.link>
+            On This Day
+          </h1>
+        </div>
         <p class="text-base-content/70 text-right">
           {formatted_date(@month, @day)}
         </p>
@@ -30,7 +37,14 @@
 
     <!-- Desktop Header -->
     <div class="hidden lg:flex justify-between items-center mb-10">
-      <h1 class="text-4xl font-bold text-base-content">On This Day</h1>
+      <div class="flex items-center gap-6">
+        <h1 class="text-4xl font-bold text-base-content">
+          <.link href="/" class="text-primary hover:text-primary/80">
+            &lt;
+          </.link>
+          On This Day
+        </h1>
+      </div>
       <p class="text-base-content/70 text-right">
         {formatted_date(@month, @day)}
       </p>
