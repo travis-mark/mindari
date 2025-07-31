@@ -71,6 +71,7 @@ defmodule MindariWeb.UserLive.LoginTest do
       {:ok, _lv, html} = live(conn, ~p"/login")
 
       assert html =~ "You need to reauthenticate"
+      assert html =~ user.email
       refute html =~ "Register"
     end
   end

@@ -22,7 +22,7 @@ defmodule MindariWeb.UserSessionControllerTest do
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
-      response = html_response(conn, 200)
+      _response = html_response(conn, 200)
     end
 
     test "logs the user in with remember me", %{conn: conn, user: user} do
@@ -83,7 +83,7 @@ defmodule MindariWeb.UserSessionControllerTest do
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
-      response = html_response(conn, 200)
+      _response = html_response(conn, 200)
     end
 
     test "confirms unconfirmed user", %{conn: conn, unconfirmed_user: user} do
@@ -104,7 +104,7 @@ defmodule MindariWeb.UserSessionControllerTest do
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
-      response = html_response(conn, 200)
+      _response = html_response(conn, 200)
     end
 
     test "redirects to login page when magic link is invalid", %{conn: conn} do

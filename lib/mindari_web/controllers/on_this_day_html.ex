@@ -11,7 +11,7 @@ defmodule MindariWeb.OnThisDayHTML do
   """
   def previous_day_path(month, day) do
     {prev_month, prev_day} = previous_day(month, day)
-    ~p"/onthisday?month=#{prev_month}&day=#{prev_day}"
+    ~p"/then?month=#{prev_month}&day=#{prev_day}"
   end
 
   @doc """
@@ -19,7 +19,7 @@ defmodule MindariWeb.OnThisDayHTML do
   """
   def next_day_path(month, day) do
     {next_month, next_day} = next_day(month, day)
-    ~p"/onthisday?month=#{next_month}&day=#{next_day}"
+    ~p"/then?month=#{next_month}&day=#{next_day}"
   end
 
   @doc """
@@ -146,7 +146,7 @@ defmodule MindariWeb.OnThisDayHTML do
   def previous_month_path(month, _day) do
     {prev_month, _prev_year} = previous_month(month)
     # Use day 1 for month navigation
-    ~p"/onthisday?month=#{prev_month}&day=1"
+    ~p"/then?month=#{prev_month}&day=1"
   end
 
   @doc """
@@ -155,7 +155,7 @@ defmodule MindariWeb.OnThisDayHTML do
   def next_month_path(month, _day) do
     {next_month, _next_year} = next_month(month)
     # Use day 1 for month navigation
-    ~p"/onthisday?month=#{next_month}&day=1"
+    ~p"/then?month=#{next_month}&day=1"
   end
 
   defp previous_month(month) do
@@ -205,7 +205,7 @@ defmodule MindariWeb.OnThisDayHTML do
           {:error, _} ->
             date_string
         end
-      
+
       # Handle date-only format like "2025-07-14"
       true ->
         case Date.from_iso8601(date_string) do
@@ -242,7 +242,7 @@ defmodule MindariWeb.OnThisDayHTML do
           day: day,
           is_current: is_current,
           is_today: is_today && !is_current,
-          path: ~p"/onthisday?month=#{month}&day=#{day}"
+          path: ~p"/then?month=#{month}&day=#{day}"
         }
       end
 
