@@ -1,20 +1,16 @@
 <Layouts.flash_group flash={@flash} />
-<div class="px-4 py-10 sm:px-6 lg:px-8 xl:px-28">
-  <div class="mx-auto max-w-7xl lg:mx-0">
+<div>
+  <div style="margin-left: auto; margin-right: auto; max-width: 80rem">
     <!-- Mobile Header with Navigation -->
-    <div class="lg:hidden mb-8">
+    <div class="lg:none mb-8">
       <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-4">
-          <h1 class="text-3xl font-bold text-base-content">
-            <.link href="/">
-              &lt;
-            </.link>
+          <h1>
+            <.link href="/">&lt;</.link>
             On This Day
           </h1>
         </div>
-        <p class="text-base-content/70 text-right">
-          {formatted_date(@month, @day)}
-        </p>
+        <p>{formatted_date(@month, @day)}</p>
       </div>
       
       <!-- Day Navigation for Mobile -->
@@ -36,116 +32,106 @@
     </div>
 
     <!-- Desktop Header -->
-    <div class="hidden lg:flex justify-between items-center mb-10">
-      <div class="flex items-center gap-6">
-        <h1 class="text-4xl font-bold text-base-content">
+    <div class="none lg:flex justify-between items-center mb-10">
+      <div class="cell">
+        <h1>
           <.link href="/">&lt;</.link>
           On This Day
         </h1>
+        <p>{formatted_date(@month, @day)}</p>
       </div>
-      <p class="text-base-content/70 text-right">
-        {formatted_date(@month, @day)}
-      </p>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-6">
+    <div style="display: flex; gap: 1rem;">
       <!-- Sidebar - Calendar (Desktop only) -->
-      <div class="hidden lg:block w-64 flex-shrink-0">
-        <div class="bg-base-200 rounded-box p-4 border border-base-300 sticky top-8">
-        <% calendar = calendar_data(@month, @day) %>
-        <div class="mb-4">
-          <div class="flex items-center justify-between mb-4">
-            <.link href={previous_month_path(@month, @day)}>
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                >
-                </path>
-              </svg>
-            </.link>
-            <h2 class="text-lg font-semibold text-base-content text-center">
-              {calendar.month_name} {calendar.year}
-            </h2>
-            <.link href={next_month_path(@month, @day)}>
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                >
-                </path>
-              </svg>
-            </.link>
-          </div>
-          
-<!-- Calendar Grid -->
-          <div class="grid grid-cols-7 gap-1 text-xs">
-            <!-- Day headers -->
-            <%= for day_name <- ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] do %>
-              <div class="text-center font-medium text-base-content/60 py-2">
-                {day_name}
-              </div>
-            <% end %>
-            
-<!-- Calendar days -->
-            <%= for day_data <- calendar_days(calendar) do %>
-              <%= if day_data == nil do %>
-                <div class="aspect-square"></div>
-              <% else %>
-                <.link
-                  href={day_data.path}
-                  class={[
-                    "aspect-square flex items-center justify-center rounded text-center transition-colors text-sm",
-                    cond do
-                      day_data.is_current -> "bg-accent text-primary-content font-bold"
-                      day_data.is_today -> "bg-base-300 text-base-content ring-1 ring-base-content/20"
-                      true -> "text-base-content/70 hover:bg-base-300 hover:text-base-content"
-                    end
-                  ]}
-                >
-                  {day_data.day}
-                </.link>
+      <div class="none lg:block" style="width: 16rem; flex-shrink: 0;">
+        <div class="card">
+          <% calendar = calendar_data(@month, @day) %>
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-4">
+              <.link href={previous_month_path(@month, @day)}>
+                <svg style="height: 3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  >
+                  </path>
+                </svg>
+              </.link>
+              <h3 class="text-center">{calendar.month_name} {calendar.year}</h3>
+              <.link href={next_month_path(@month, @day)}>
+                <svg style="height: 3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  >
+                  </path>
+                </svg>
+              </.link>
+            </div>
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-1 text-xs" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; font-size: 0.75rem; line-height: 1rem;">
+              <!-- Day headers -->
+              <%= for day_name <- ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] do %>
+                <div class="text-center font-medium text-base-content/60 py-2">
+                  {day_name}
+                </div>
               <% end %>
-            <% end %>
+              <!-- Calendar days -->
+              <%= for day_data <- calendar_days(calendar) do %>
+                <%= if day_data == nil do %>
+                  <div class="aspect-square"></div>
+                <% else %>
+                  <.link
+                    href={day_data.path}
+                    class={[
+                      "aspect-square flex items-center justify-center rounded text-center transition-colors text-sm",
+                      cond do
+                        day_data.is_current -> "bg-accent text-primary-content font-bold"
+                        day_data.is_today -> "bg-base-300 text-base-content ring-1 ring-base-content/20"
+                        true -> "text-base-content/70 hover:bg-base-300 hover:text-base-content"
+                      end
+                    ]}
+                  >
+                    {day_data.day}
+                  </.link>
+                <% end %>
+              <% end %>
+            </div>
           </div>
-        </div>
         </div>
       </div>
-    
-      <!-- Main content -->
-      <div class="flex-1 min-w-0">
 
-      <div class="space-y-6">
+      <!-- Main content -->
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
         <%= if Enum.empty?(@notes) do %>
           <div class="text-center py-12">
             <p class="text-base-content/60">No notes found for this date.</p>
           </div>
         <% else %>
           <%= for note <- @notes do %>
-            <div class="bg-base-200 shadow-lg rounded-box p-6 border border-base-300 max-w-4xl">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-semibold">
+            <div class="card">
+              <div class="cell">
+                <h3 class="m-0">
                   <a href={obsidian_uri(note.file_path)}>
                     {note.title}
                   </a>
                 </h3>
-                <p class="text-sm text-base-content/60 text-right ml-4">
+                <p class="m-0">
                   {formatted_entry_date(note.date)}
                 </p>
               </div>
-              <div class="prose max-w-3xl text-base-content leading-relaxed">
+              <div>
                 {raw(clean_content_html(note.content_html, note.title))}
               </div>
             </div>
           <% end %>
         <% end %>
       </div>
-
-    </div>
     </div>
   </div>
 </div>
