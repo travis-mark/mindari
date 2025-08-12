@@ -78,6 +78,8 @@ defmodule MindariWeb.Router do
       live "/counter/new", CounterLive.Form, :new
       live "/counter/:id", CounterLive.Show, :show
       live "/counter/:id/edit", CounterLive.Form, :edit
+
+      live "/soul", SoulLive.Index, :index
     end
 
     post "/login", UserSessionController, :create
