@@ -43,17 +43,38 @@ defmodule MindariWeb.SoulLive.Index do
 
   @impl true
   def handle_event("sum_function", %{"value" => value}, socket) do
-    result = try do
-      value = value |> String.to_integer()
-      Enum.sum(1..value)
-    rescue
-      _ -> :error
-    end
-    results = [[value, result] | socket.assigns.results] |> IO.inspect()
+    pid = self()
+    Task.start(fn ->
+      result = try do
+        value = value |> String.to_integer()
+        Enum.sum(1..value)
+        # Slow version
+        # Enum.reduce(1..value, 0, fn i, acc ->
+        #   acc + i
+        # end)
+      rescue
+        _ -> :error
+      end
+      send(pid, {:calculation_complete, value, result})
+    end)
+
+    results = [[value, :calculating] | socket.assigns.results] |> IO.inspect()
 
     {:noreply,
       socket
       |> assign(:results, results)
       |> assign(:value, "")}
+  end
+
+  @impl true
+  def handle_info({:calculation_complete, input_value, result}, socket) do
+    # Find and replace the calculating entry with the actual result
+    updated_results =
+      Enum.map(socket.assigns.results, fn
+        [^input_value, :calculating] -> [input_value, result]
+        other -> other
+      end)
+
+    {:noreply, assign(socket, :results, updated_results)}
   end
 end
