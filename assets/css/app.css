@@ -1,20 +1,20 @@
 /* This file is for your main application CSS */
 :root {
   --bg-primary: #1a1a1a;
+  --bg-secondary: #2a2a2a;
   --fg-primary: #e0e0e0;
 }
 /* Tag styles */
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
-  color: var(--fg-primary);
-  background-color: var(--bg-primary);
-}
+body { background-color: var(--bg-primary); color: var(--fg-primary); }
 a { color: #f1c40f; } 
 a:hover { text-decoration: underline;}
+/* Fonts */
+* { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+* { line-height: 1.6; }
+
 /* Components */
 .card { 
-  background-color: #2a2a2a;
+  background-color: var(--bg-secondary);
   border-radius: 1rem;
   padding: 1rem;
   border: 1px solid #3a3a3a;
