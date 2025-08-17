@@ -74,26 +74,26 @@
               </.link>
             </div>
             <!-- Calendar Grid -->
-            <div class="grid grid-cols-7 gap-1 text-xs" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; font-size: 0.75rem; line-height: 1rem;">
+            <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; font-size: 0.75rem; line-height: 1rem;">
               <!-- Day headers -->
               <%= for day_name <- ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] do %>
-                <div class="text-center font-medium text-base-content/60 py-2">
+                <div class="text-center">
                   {day_name}
                 </div>
               <% end %>
               <!-- Calendar days -->
               <%= for day_data <- calendar_days(calendar) do %>
                 <%= if day_data == nil do %>
-                  <div class="aspect-square"></div>
+                  <div></div>
                 <% else %>
                   <.link
                     href={day_data.path}
                     class={[
-                      "aspect-square flex items-center justify-center rounded text-center transition-colors text-sm",
+                      "text-center",
                       cond do
-                        day_data.is_current -> "bg-accent text-primary-content font-bold"
-                        day_data.is_today -> "bg-base-300 text-base-content ring-1 ring-base-content/20"
-                        true -> "text-base-content/70 hover:bg-base-300 hover:text-base-content"
+                        day_data.is_current -> "fg-primary text-bold text-decoration-none"
+                        day_data.is_today -> ""
+                        true -> ""
                       end
                     ]}
                   >
