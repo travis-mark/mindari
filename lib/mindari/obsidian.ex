@@ -185,38 +185,38 @@ defmodule Mindari.Obsidian do
     markdown
     |> String.replace(
       ~r/^#\s+(.+)$/m,
-      "<h1 class=\"text-2xl font-bold text-gray-100 mb-4\">\\1</h1>"
+      "<h1>\\1</h1>"
     )
     |> String.replace(
       ~r/^##\s+(.+)$/m,
-      "<h2 class=\"text-xl font-semibold text-gray-200 mb-3\">\\1</h2>"
+      "<h2>\\1</h2>"
     )
     |> String.replace(
       ~r/^###\s+(.+)$/m,
-      "<h3 class=\"text-lg font-medium text-gray-300 mb-2\">\\1</h3>"
+      "<h3>\\1</h3>"
     )
     |> String.replace(
       ~r/\*\*(.+?)\*\*/m,
-      "<strong class=\"font-semibold text-gray-100\">\\1</strong>"
+      "<strong>\\1</strong>"
     )
-    |> String.replace(~r/\*(.+?)\*/m, "<em class=\"italic text-gray-300\">\\1</em>")
+    |> String.replace(~r/\*(.+?)\*/m, "<em>\\1</em>")
     |> String.replace(
       ~r/\[([^\]]+)\]\(([^)]+)\)/m,
-      "<a href=\"\\2\" target=\"_blank\" rel=\"noopener noreferrer\">\\1 <span class=\"text-xs\">↗</span></a>"
+      "<a href=\"\\2\" target=\"_blank\" rel=\"noopener noreferrer\">\\1 <span>↗</span></a>"
     )
     |> String.replace(
       ~r/\[\[([^\]]+)\]\]/m,
       "<a href=\"obsidian://open?vault=Vault&file=\\1\" data-obsidian-link=\"\\1\">\\1</a>"
     )
-    |> String.replace(~r/^- (.+)$/m, "<li class=\"text-gray-300 mb-1 ml-4\">\\1</li>")
-    |> String.replace(~r/\[x\]/m, "<span class=\"text-green-400\">✓</span>")
-    |> String.replace(~r/\[ \]/m, "<span class=\"text-gray-500\">☐</span>")
-    |> String.replace(~r/\n\n/m, "</p><p class=\"text-gray-300 mb-4 leading-relaxed\">")
-    |> (&("<p class=\"text-gray-300 mb-4 leading-relaxed\">" <> &1 <> "</p>")).()
-    |> String.replace("<p class=\"text-gray-300 mb-4 leading-relaxed\"></p>", "")
+    |> String.replace(~r/^- (.+)$/m, "<li>\\1</li>")
+    |> String.replace(~r/\[x\]/m, "<span>✓</span>")
+    |> String.replace(~r/\[ \]/m, "<span>☐</span>")
+    |> String.replace(~r/\n\n/m, "</p><p>")
+    |> (&("<p>" <> &1 <> "</p>")).()
+    |> String.replace("<p></p>", "")
     |> String.replace(
-      ~r/<li class="text-gray-300 mb-1 ml-4">(.+?)<\/li>/m,
-      "<ul class=\"list-disc list-inside mb-4 space-y-1\"><li class=\"text-gray-300 mb-1 ml-4\">\\1</li></ul>"
+      ~r/<li>(.+?)<\/li>/m,
+      "<ul><li>\\1</li></ul>"
     )
   end
 

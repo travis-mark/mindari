@@ -6,7 +6,7 @@ defmodule Mindari.ObsidianTest do
       markdown = "Check out [Google](https://google.com) for search."
 
       expected =
-        "<p class=\"text-gray-300 mb-4 leading-relaxed\">Check out <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Google <span class=\"text-xs\">↗</span></a> for search.</p>"
+        "<p>Check out <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Google <span>↗</span></a> for search.</p>"
 
       result = Mindari.Obsidian.markdown_to_html(markdown)
       assert result == expected
@@ -17,7 +17,7 @@ defmodule Mindari.ObsidianTest do
         "Visit [Google](https://google.com) or [GitHub](https://github.com) for more info."
 
       expected =
-        "<p class=\"text-gray-300 mb-4 leading-relaxed\">Visit <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Google <span class=\"text-xs\">↗</span></a> or <a href=\"https://github.com\" target=\"_blank\" rel=\"noopener noreferrer\">GitHub <span class=\"text-xs\">↗</span></a> for more info.</p>"
+        "<p>Visit <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Google <span>↗</span></a> or <a href=\"https://github.com\" target=\"_blank\" rel=\"noopener noreferrer\">GitHub <span>↗</span></a> for more info.</p>"
 
       result = Mindari.Obsidian.markdown_to_html(markdown)
       assert result == expected
@@ -27,7 +27,7 @@ defmodule Mindari.ObsidianTest do
       markdown = "See also [[Daily Notes]] and [[Project Ideas]]."
 
       expected =
-        "<p class=\"text-gray-300 mb-4 leading-relaxed\">See also <a href=\"obsidian://open?vault=Vault&file=Daily Notes\" data-obsidian-link=\"Daily Notes\">Daily Notes</a> and <a href=\"obsidian://open?vault=Vault&file=Project Ideas\" data-obsidian-link=\"Project Ideas\">Project Ideas</a>.</p>"
+        "<p>See also <a href=\"obsidian://open?vault=Vault&file=Daily Notes\" data-obsidian-link=\"Daily Notes\">Daily Notes</a> and <a href=\"obsidian://open?vault=Vault&file=Project Ideas\" data-obsidian-link=\"Project Ideas\">Project Ideas</a>.</p>"
 
       result = Mindari.Obsidian.markdown_to_html(markdown)
       assert result == expected
@@ -37,7 +37,7 @@ defmodule Mindari.ObsidianTest do
       markdown = "Check [[My Notes]] or visit [Google](https://google.com)."
 
       expected =
-        "<p class=\"text-gray-300 mb-4 leading-relaxed\">Check <a href=\"obsidian://open?vault=Vault&file=My Notes\" data-obsidian-link=\"My Notes\">My Notes</a> or visit <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Google <span class=\"text-xs\">↗</span></a>.</p>"
+        "<p>Check <a href=\"obsidian://open?vault=Vault&file=My Notes\" data-obsidian-link=\"My Notes\">My Notes</a> or visit <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Google <span>↗</span></a>.</p>"
 
       result = Mindari.Obsidian.markdown_to_html(markdown)
       assert result == expected
@@ -47,7 +47,7 @@ defmodule Mindari.ObsidianTest do
       markdown = "Visit [Site with &amp; symbols](https://example.com?q=test&amp;r=1)."
 
       expected =
-        "<p class=\"text-gray-300 mb-4 leading-relaxed\">Visit <a href=\"https://example.com?q=test&amp;r=1\" target=\"_blank\" rel=\"noopener noreferrer\">Site with &amp; symbols <span class=\"text-xs\">↗</span></a>.</p>"
+        "<p>Visit <a href=\"https://example.com?q=test&amp;r=1\" target=\"_blank\" rel=\"noopener noreferrer\">Site with &amp; symbols <span>↗</span></a>.</p>"
 
       result = Mindari.Obsidian.markdown_to_html(markdown)
       assert result == expected
@@ -57,7 +57,7 @@ defmodule Mindari.ObsidianTest do
       markdown = "Reference [[Note with Spaces]] and [[Project-2023]]."
 
       expected =
-        "<p class=\"text-gray-300 mb-4 leading-relaxed\">Reference <a href=\"obsidian://open?vault=Vault&file=Note with Spaces\" data-obsidian-link=\"Note with Spaces\">Note with Spaces</a> and <a href=\"obsidian://open?vault=Vault&file=Project-2023\" data-obsidian-link=\"Project-2023\">Project-2023</a>.</p>"
+        "<p>Reference <a href=\"obsidian://open?vault=Vault&file=Note with Spaces\" data-obsidian-link=\"Note with Spaces\">Note with Spaces</a> and <a href=\"obsidian://open?vault=Vault&file=Project-2023\" data-obsidian-link=\"Project-2023\">Project-2023</a>.</p>"
 
       result = Mindari.Obsidian.markdown_to_html(markdown)
       assert result == expected
