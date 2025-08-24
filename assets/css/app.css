@@ -5,6 +5,7 @@
   --fg-primary: #e0e0e0;
 }
 .fg-primary { color: var(--fg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
 /* Tag styles */
 body { background-color: var(--bg-primary); color: var(--fg-primary); }
 a { color: #f1c40f; } 
